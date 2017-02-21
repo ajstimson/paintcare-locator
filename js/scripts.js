@@ -123,23 +123,26 @@ function initPlMap() {
                     clearOverlays();
 
 					// loop through locations
+					i=1;
+					jQuery('.map-search-list').empty();
                     jQuery.each(response, function(key, value) {
 
                         var latLng = new google.maps.LatLng(value.Lat, value.Lng);
 						// set the icon if none are set then use default icon
                         if (paintcare.map_icons[value.LocationType]) {
-                            var icon = paintcare.map_icons[value.LocationType];
-							if(icon == ''){
-								icon =  paintcare.plugin_uri + 'images/red-circle.png';	
+                            var icon_color = paintcare.map_icons[value.LocationType];
+							if(icon_color == ''){
+								icon_color =  'FF0000';	
 							}
                         } else {
-							var icon =	paintcare.plugin_uri + 'images/red-circle.png';	
+							var icon_color =	'FF0000';	
                         }
-
+							
                         // Create a marker for each place.
                         var location_marker = new google.maps.Marker({
-                            map: map,
-                            icon: icon,
+                            id: i,
+							map: map,
+                            icon: '//chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+ i+'|'+icon_color+'|000000',
                             title: value.Address1,
                             position: latLng
                         });
@@ -157,6 +160,11 @@ function initPlMap() {
                             '</div>';
 
                         markers.push(location_marker);
+						
+						//add item to locations list						
+						jQuery('.map-search-list').append('<div class="map-list-item"><div class="map-list-item-title"><span>'+ i+'</span> <a href="#" class="google-maps-trigger-item">' + value.Address1 + '</a></div><div class="map-list-item-address"> ' + value.Address2 + ' ' + value.City + ', ' + value.State + ', ' + value.Distance + ' Mi. </div></div>');
+						
+						
 						//register click event for window
                         google.maps.event.addListener(location_marker, 'click', function() {
                             infowindow.setOptions({
@@ -168,8 +176,17 @@ function initPlMap() {
 
 
 
-
+						i++;
                     });
+					
+					jQuery('.google-maps-trigger-item').each(function(i){
+    jQuery(this).on('click', function(){
+        google.maps.event.trigger(markers[i], 'click');
+		return false;
+    });
+});
+					
+					console.log(markers);
                     // Create a marker for each place.
                     var location_marker = new google.maps.Marker({
                         map: map,
@@ -198,7 +215,9 @@ function initPlMap() {
             jQuery('.map-search-output').html('<p style="color:Red;font-weight:bold;">Please enter a valid Zip Code</p>');
         }
     }
-	
+	function OpenInfowindowForMarker(index) {
+    google.maps.event.trigger(markers[index], 'click');
+}
 	 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
         infoWindow.setPosition(pos);
         infoWindow.setContent(browserHasGeolocation ?

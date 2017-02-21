@@ -80,36 +80,36 @@
     Redux::setSection( $opt_name, array(
         'title'  => __( 'Map Icons', 'redux-framework-demo' ),
         'id'     => 'el-map-marker-alt',
-        'desc'   => __( 'Set the icons for class levels', 'redux-framework-demo' ),
+        'desc'   => __( 'Set the icon colors for the markers', 'redux-framework-demo' ),
         'icon'   => 'el el-map-marker-alt',
         'fields' => array(
             array(
                 'id'       => 'location-type-0',
-                'type'     => 'media',
+                'type'     => 'color',
                 'title'    => __( 'Location Type 1', 'redux-framework-demo' ),
                 
             ),
 			  array(
                 'id'       => 'location-type-1',
-                'type'     => 'media',
+                'type'     => 'color',
                 'title'    => __( 'Location Type 2', 'redux-framework-demo' ),
                 
             ),
 			  array(
                 'id'       => 'location-type-2',
-                'type'     => 'media',
+                'type'     => 'color',
                 'title'    => __( 'Location Type 3', 'redux-framework-demo' ),
                 
             ),
 			  array(
                 'id'       => 'location-type-3',
-                'type'     => 'media',
+                'type'     => 'color',
                 'title'    => __( 'Location Type 4', 'redux-framework-demo' ),
                 
             ),
 			  array(
                 'id'       => 'location-type-4',
-                'type'     => 'media',
+                'type'     => 'color',
                 'title'    => __( 'Location Type 5', 'redux-framework-demo' ),
                 
             ),

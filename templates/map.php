@@ -20,7 +20,13 @@ global $map_vars,$maplocator;
 	#maps-content p {
     font-size:12px;
     color: #555555;
-}
+}	
+
+	.map-search-map{float:left;width:70%;}
+	.map-search-list{float:left;width:30%;}
+	.map-search-list .map-list-item{padding:0px 0px 10px 10px;border-bottom:1px solid #CCC;font-size:12px;}
+	.map-search-list .map-list-item-title span{font-weight:bold;}
+	.map-search-list .map-list-item-title a{font-weight:bold; text-decoration:underline}
 	<?php echo $maplocation['map-css']; ?>
     </style>
     
@@ -32,13 +38,16 @@ global $map_vars,$maplocator;
 <input id="pac-input" class="controls" type="number" placeholder="<?php echo $maplocator['map-placeholder']; ?>" maxlength="5" >
 <input id="pac-submit" type="submit" value="<?php echo $maplocator['map-button']; ?>" name="search" ></form>
 <div class="map-search-output"></div>
+
 </div>
 <!-- End Map Locator Form -->
 
 
 
 <!-- Start Map Output-->
-<div id="initPlMap"  ></div>
+<div class="map-search-map"><div id="initPlMap"  ></div></div>
+<div class="map-search-list"></div>
+<div style="clear:both"></div>
 <!-- End Map Output-->
 
 

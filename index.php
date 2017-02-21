@@ -52,11 +52,11 @@ class PaintCareLocator{
 		wp_register_script( 'paintcare-locator', plugins_url('js/scripts.js', __FILE__), array('jquery') );
 		
 		#load the map icons for location types
-		$map_icons = array($maplocator['location-type-0']['url'],
-						   $maplocator['location-type-1']['url'],
-						   $maplocator['location-type-2']['url'],
-						   $maplocator['location-type-3']['url'],
-						   $maplocator['location-type-4']['url']);
+		$map_icons = array(str_replace("#","",$maplocator['location-type-0']),
+						   str_replace("#","",$maplocator['location-type-1']),
+						   str_replace("#","",$maplocator['location-type-2']),
+						   str_replace("#","",$maplocator['location-type-3']),
+						  str_replace("#","", $maplocator['location-type-4']));
 		# Localize the script with new data
 		$translation_array = array(
 			'plugin_uri' => PL_PLUGIN_URI,
