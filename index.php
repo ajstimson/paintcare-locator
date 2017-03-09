@@ -30,8 +30,8 @@ class PaintCareLocator{
 			add_action('wp_enqueue_scripts', array($this,'scripts'));
 			
 			#url for the data feed
-			$this->paintcare_datafeed = 'http://12.156.76.219/Locator.svc/Getlocations';			
-			
+			$this->paintcare_datafeed = 'http://12.156.76.219/Locator.svc/Getlocations';
+
 			#ajax calls
 			add_action( 'wp_ajax_pc_get_json', array($this,'pc_get_json' ));
 			add_action( 'wp_ajax_nopriv_pc_get_json', array($this,'pc_get_json' ) );
@@ -46,17 +46,29 @@ class PaintCareLocator{
 			
 		#always make sure jquery is loaded	
 		wp_enqueue_script('jquery');
-	
 			  
 		#Register the script
 		wp_register_script( 'paintcare-locator', plugins_url('js/scripts.js', __FILE__), array('jquery') );
+
+
+
+		$container_sizes = file_get_contents('http://12.156.76.219/Locator.svc/getContainerSizes');
+		$container_sizes = json_decode($container_sizes, true);
+		$container_sizes = $container_sizes['getContainerSizesResult'];
+		$container_sizes = json_decode($container_sizes, true);
 		
 		#load the map icons for location types
-		$map_icons = array(str_replace("#","",$maplocator['location-type-0']),
-						   str_replace("#","",$maplocator['location-type-1']),
-						   str_replace("#","",$maplocator['location-type-2']),
-						   str_replace("#","",$maplocator['location-type-3']),
-						  str_replace("#","", $maplocator['location-type-4']));
+		$map_icons = array($maplocator['five-gallons']['url'],
+							$maplocator['five-gallon-reuse']['url'],
+						   $maplocator['up-to-20-gallons']['url'],
+						   $maplocator['up-to-20-gallons-reuse']['url'],
+						   $maplocator['up-to-100-gallons']['url'],
+						   $maplocator['up-to-100-gallons-reuse']['url'],
+						   $maplocator['hhw-programs']['url'],
+						   $maplocator['hhw-reuse']['url']
+						   );
+
+
 		# Localize the script with new data
 		$translation_array = array(
 			'plugin_uri' => PL_PLUGIN_URI,
@@ -64,20 +76,17 @@ class PaintCareLocator{
 			'api_key' => $maplocator['map-api-key'],
 			'default_lat'=>$maplocator['map-default-lat'],
 			'default_lng'=>$maplocator['map-default-lng'],
-			'default_zoom'=>$maplocator['map-default-zoom'],			
+			'default_zoom'=>$maplocator['map-default-zoom'],
 			'map_height' => $maplocator['map-height'],
 			'map_icons' => $map_icons,
-			
-			
+			'container_size' => $container_sizes
 		);
+
+		
 		
 		#set up localization variables so we can use them in our js file
-		wp_localize_script(  'paintcare-locator', 'paintcare', $translation_array );
-		
-		
+		wp_localize_script(  'paintcare-locator', 'paintcare', $translation_array , $container_sizes);
 		}
-		
-		
 		
 		#get the json content from remote url
 		function get_json($vars){
@@ -91,9 +100,10 @@ class PaintCareLocator{
 									),
 						'body' => json_encode(array( 'Lat' => $vars['Lat'], 'Lng' => $vars['Lng'] , 'St' => $vars['St']))
 						);
-	
-			#make remote request
+			
+			#make remote requests
 			$response =  wp_remote_post($this->paintcare_datafeed, $args );
+
 			#did we get an error?
 			if ( is_wp_error( $response ) ) {
 			   $body['error'] = $response->get_error_message();
@@ -105,8 +115,6 @@ class PaintCareLocator{
 				#convert to array
 				return stripslashes($body);
 			}
-						
-			
 			
 		}
 		#ajax search and get locations
@@ -122,6 +130,7 @@ class PaintCareLocator{
 			
 		die();	
 		}
+		
 		#main shortcode function
 		function shortcode(){
 			global $map_vars,$maplocator;

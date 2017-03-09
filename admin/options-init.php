@@ -84,35 +84,60 @@
         'icon'   => 'el el-map-marker-alt',
         'fields' => array(
             array(
-                'id'       => 'location-type-0',
-                'type'     => 'color',
-                'title'    => __( 'Location Type 1', 'redux-framework-demo' ),
+                'id'       => 'five-gallons',
+                'type'     => 'media',
+                'title'    => __( 'Accepts
+up to 5 gallons', 'redux-framework-demo' ),
+                
+            ),
+            array(
+                'id'       => 'five-gallon-reuse',
+                'type'     => 'media',
+                'title'    => __( '
+Reuse Program (5 Gallons)', 'redux-framework-demo' ),
                 
             ),
 			  array(
-                'id'       => 'location-type-1',
-                'type'     => 'color',
-                'title'    => __( 'Location Type 2', 'redux-framework-demo' ),
+                'id'       => 'up-to-20-gallons',
+                'type'     => 'media',
+                'title'    => __( 'Accepts up to 10-20 gal.', 'redux-framework-demo' ),
                 
             ),
+              array(
+                'id'       => 'up-to-20-gallons-reuse',
+                'type'     => 'media',
+                'title'    => __( '
+Reuse Program (Up to 20 Gallons)', 'redux-framework-demo' ),
+                        
+                ),
 			  array(
-                'id'       => 'location-type-2',
-                'type'     => 'color',
-                'title'    => __( 'Location Type 3', 'redux-framework-demo' ),
+                'id'       => 'up-to-100-gallons',
+                'type'     => 'media',
+                'title'    => __( 'Accepts
+up to 100 gal.', 'redux-framework-demo' ),
                 
             ),
+              array(
+                'id'       => 'up-to-100-gallons-reuse',
+                'type'     => 'media',
+                'title'    => __( '
+Reuse Program (Up to 100 Gallons)', 'redux-framework-demo' ),
+                        
+                ),
 			  array(
-                'id'       => 'location-type-3',
-                'type'     => 'color',
-                'title'    => __( 'Location Type 4', 'redux-framework-demo' ),
+                'id'       => 'hhw-programs',
+                'type'     => 'media',
+                'title'    => __( 'HHW Programs
+(accepts other items)', 'redux-framework-demo' ),
                 
             ),
-			  array(
-                'id'       => 'location-type-4',
-                'type'     => 'color',
-                'title'    => __( 'Location Type 5', 'redux-framework-demo' ),
-                
-            ),
+              array(
+                'id'       => 'hhw-reuse',
+                'type'     => 'media',
+                'title'    => __( '
+Reuse Program (HHW)', 'redux-framework-demo' ),
+                        
+                ),
 			
         )
     ) );
@@ -146,13 +171,6 @@
                 
             ),
 			array(
-                'id'       => 'map-button',
-                'type'     => 'text',
-				'default' => 'Search',
-                'title'    => __( 'Search button text', 'redux-framework-demo' ),
-                
-            ),
-			array(
                 'id'       => 'map-default-lat',
                 'type'     => 'text',
 				'default' => '36.8701483',
@@ -171,6 +189,12 @@
                 'type'     => 'text',
 				'default' => '4',
                 'title'    => __( 'Default zoom when first loading map', 'redux-framework-demo' ),
+                
+            ),
+            array(
+                'id'       => 'map-image',
+                'type'     => 'media',
+                'title'    => __( 'Attach your static map image here', 'redux-framework-demo' ),
                 
             ),
 		    array(
