@@ -21,7 +21,7 @@ global $map_vars,$maplocator;
 	<!-- Start Map Locator Form -->
 	<div id="PlMapSearch">
 		<form action="" method="post" id="pac-input-form">
-			<input id="pac-input" class="controls" type="number" placeholder="<?php echo $maplocator['map-placeholder']; ?>" maxlength="5" >
+			<input id="pac-input" class="controls" type="text" placeholder="<?php echo $maplocator['map-placeholder']; ?>"  >
 			<button type="submit" id="pac-submit" class="icon-search icon-large" name="search"><i class="fa fa-search"></i></button>
 		</form>
 		<div class="map-search-output"></div>
