@@ -35,6 +35,7 @@ function initPlMap() {
         }
         if (jQuery("#pac-input").val().length == 5 && jQuery.isNumeric( jQuery("#pac-input").val()) ) {
             console.log('is zipcode');
+<<<<<<< HEAD
             var geocoder = new google.maps.Geocoder();
             var displayZip =  getAddressInfoByZip(jQuery("#pac-input").val());
         }else{
@@ -45,6 +46,18 @@ function initPlMap() {
             alert("Please enter a valid address");  
             }
         }
+=======
+		    var geocoder = new google.maps.Geocoder();
+          var displayZip =  getAddressInfoByZip(jQuery("#pac-input").val());
+        }else{
+			console.log('is address');
+			 var geocoder = new google.maps.Geocoder();
+            var displayAddress = getAddressInfoByFormatedAddress(jQuery("#pac-input").val());
+			if(displayAddress == false){
+			alert("Please enter a valid address");	
+			}
+		}
+>>>>>>> origin/master
         return false;
     });
     // Try HTML5 geolocation.
@@ -366,7 +379,15 @@ function initPlMap() {
     function response(obj) {
         console.log(obj);
     }
+<<<<<<< HEAD
             // convert the zip code into coordinates and put all the data in an array
+=======
+	
+	
+	
+	
+	    // convert the zip code into coordinates and put all the data in an array
+>>>>>>> origin/master
     function getAddressInfoByFormatedAddress(zip) {
         if (zip.length > 5 && typeof google != 'undefined') {
             var addr = {};
@@ -375,7 +396,11 @@ function initPlMap() {
                 'address': zip
             }, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
+<<<<<<< HEAD
                     mapFadeOut();
+=======
+                    FadeOut();
+>>>>>>> origin/master
                     if (results.length >= 1) {
                         for (var ii = 0; ii < results[0].address_components.length; ii++) {
                             var street_number = route = street = city = state = zipcode = country =
@@ -408,30 +433,51 @@ function initPlMap() {
                         addr.lng = results[0].geometry.location.lng();
                         addr.place = results[0];
                         addr.success = true;
+<<<<<<< HEAD
                         console.log(addr);
                         setLocationMarkers(addr);
                     } else {
                         alert("Please enter a valid address");  
+=======
+						console.log(addr);
+                        setLocationMarkers(addr);
+                    } else {
+						alert("Please enter a valid address");	
+						
+>>>>>>> origin/master
                         response({
                             success: false
                         });
                     }
                 } else {
+<<<<<<< HEAD
                     alert("Please enter a valid address");  
+=======
+					alert("Please enter a valid address");	
+>>>>>>> origin/master
                     response({
                         success: false
                     });
                 }
             });
         } else {
+<<<<<<< HEAD
             alert("Please enter a valid address");  
+=======
+			alert("Please enter a valid address");	
+>>>>>>> origin/master
             response({
                 success: false
             });
         }
     }
+<<<<<<< HEAD
     
     
+=======
+	
+	
+>>>>>>> origin/master
     // convert the zip code into coordinates and put all the data in an array
     function getAddressInfoByZip(zip) {
         if (zip.length >= 5 && typeof google != 'undefined') {
