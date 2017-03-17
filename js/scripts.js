@@ -2,7 +2,7 @@ var map;
 //initiate the map
 function initPlMap() {
     // fade placeholder map function
-    function FadeOut() {
+    function mapFadeOut() {
         setTimeout(function() {
             jQuery('#initial-map').fadeOut();
         }, 1750);
@@ -33,9 +33,17 @@ function initPlMap() {
         if (valLength > maxCount) {
             $this.val($this.val().substring(0, maxCount));
         }
-        if (jQuery("#pac-input").val().length == 5) {
+        if (jQuery("#pac-input").val().length == 5 && jQuery.isNumeric( jQuery("#pac-input").val()) ) {
+            console.log('is zipcode');
             var geocoder = new google.maps.Geocoder();
-            getAddressInfoByZip(jQuery("#pac-input").val());
+            var displayZip =  getAddressInfoByZip(jQuery("#pac-input").val());
+        }else{
+            console.log('is address');
+            var geocoder = new google.maps.Geocoder();
+            var displayAddress = getAddressInfoByFormatedAddress(jQuery("#pac-input").val());
+            if(displayAddress == false){
+            alert("Please enter a valid address");  
+            }
         }
         return false;
     });
@@ -56,7 +64,6 @@ function initPlMap() {
         // make sure us only
         if (search_result.country == 'United States') {
             jQuery('.map-search-output').empty();
-            // console.log(search_result);
             var search_lat = search_result.lat;
             var search_lng = search_result.lng;
             var search_st = search_result.state;
@@ -77,6 +84,7 @@ function initPlMap() {
                     console.log(response);
                     clearOverlays();
                     jQuery('.map-search-list').empty();
+                    jQuery('.mobile-cards').empty();
                     // loop through locations
                     i = 1;
                     jQuery.each(response, function(key, value) {
@@ -130,6 +138,7 @@ function initPlMap() {
                                 fontSize: "12px",
                                 fontWeight: "bold",
                             },
+                            data: value.Id,
                         });
                         // location_marker.metadata = {type: "point", id: i};
                         //html for the windowbox
@@ -142,21 +151,23 @@ function initPlMap() {
                             hours = 'Paint is accepted during regular business hours; Call ahead for hours and to make sure the store can accept the amount and type of paint you would like to recycle.';
                         }
 
+                        // set default Who Can Use This Service language
                         var who = '';
-                        if (value.LocationType == 1) {
+                        if ( value.LocationType == 1 ) {
                             who = 'For Households Only (No Businesses)';
                         } else {
                             who = 'For Households and Businesses';
                         }
 
+                        // set default info language
                         var info = '';
-                        if (value.Comments ) {
+                        if ( value.Comments ) {
                             info = '<strong>' + value.Comments + '</strong> ' + value.NotationDesc ;
                         } else {
                             info = value.NotationDesc;
                         }
 
-                        if (value.Directions ){
+                        if ( value.Directions ){
                             info = value.Directions + ' ' + info;
                         }
 
@@ -167,8 +178,29 @@ function initPlMap() {
                         var message = '<div id="maps-content" data-name="' + value.Id + '">' + '<h4 id="maps-firstHeading" class="maps-firstHeading">' + value.Name + '</h4>' + '<div id="maps-body-content"><p id="info-address"><span class="row-title">Address </span><span>' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + ' <br><a href="https://www.google.com/maps/dir/current+location/' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + '" target="_blank" >Get Directions</a></span></p><p id="info-phone"><span class="row-title">Phone </span><span id="info-phone"><a href="tel:' + value.Phone + '">' + value.Phone + '</a></span></p>' + '<p id="info-hours"><span class="row-title">Hours </span><span>' + hours + '</span></p><p id="info-who"><span class="row-title">Available For</span><span>' + who + '</span></p><p id="info-limit"><span class="row-title">Restrictions</span><span>' + value.LeagalRes + '</span></p>' + info + '<p id="info-link"><span class="row-title">&nbsp;</span><span>Visit <a href="http://www.paintcare.org/products-we-accept/" target="_blank">www.paintcare.org/products-we-accept</a> for complete details.</span></p></div></div>';
 
                         markers.push(location_marker);
-                        //add item to locations list                        
-                        jQuery('.map-search-list').append(
+
+                        
+
+                         //add item to mobile cards on screen sizes 1024 and below
+                         if (jQuery(window).width() < 1025) {
+                            //add item to locations list                        
+                            jQuery('.map-search-list').append(
+                                '<article class="map-list-item"><a href="javascript:;" data-name="' +
+                                value.Id +
+                                '" class="list-link"></a><h4>' + i +
+                                '</h4><div class="map-list-item-title"><div class="address-block"><p class="list-item-name">' +
+                                value.Name + '</p><p class="list-item-add-1">' +
+                                value.City + ', ' + value.State +
+                                '</p><p class="list-item-add-3">' + value.Distance +
+                                ' miles away</p></div></div></article>'
+                            );              
+                            jQuery('.mobile-cards').append(
+                                '<div class="mobile-card google-maps-trigger-item block-item" data-name="' + value.Id + '"><h4 class="mobile-heading">' + value.Name + '</h4><a class="close-box" href="#"><i class="fa fa-times" aria-hidden="true"></i></a>' + '<div class="mobile-card-content"><p id="card-address"><span class="row-title">Address </span><span>' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + ' <br><a href="https://www.google.com/maps/dir/current+location/' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + '" target="_blank" >Get Directions</a></span></p><p id="card-phone"><span class="row-title">Phone </span><span id="card-phone"><a href="tel:' + value.Phone + '">' + value.Phone + '</a></span></p>' + '<p id="card-hours"><span class="row-title">Hours </span><span>' + hours + '</span></p><p id="card-who"><span class="row-title">Available For</span><span>' + who + '</span></p><p id="card-limit"><span class="row-title">Restrictions</span><span>' + value.LeagalRes + '</span></p>' + info + '<p id="card-link"><span class="row-title">&nbsp;</span><span>Visit <a href="http://www.paintcare.org/products-we-accept/" target="_blank">www.paintcare.org/products-we-accept</a> for complete details.</span></p></div></div>'
+                            );
+                        } else{
+                            // leave mobile cards empty
+                            //add item to locations list                        
+                            jQuery('.map-search-list').append(
                             '<div><article class="map-list-item"><a href="javascript:;" data-name="' +
                             value.Id +
                             '" class="google-maps-trigger-item block-item"></a><h4>' + i +
@@ -183,37 +215,35 @@ function initPlMap() {
                             value.State + ' ' + value.Zip +
                             '" target="_blank">Get Directions</a></p></div></div></article></div>'
                         );
+                        }
+
                         google.maps.event.addListenerOnce(map, 'tilesloaded', stopLoader);
+                        
                         //register click event for window
                         google.maps.event.addListener(location_marker, 'click', function() {
                             infowindow.setOptions({
                                 content: message,
                             });
                             infowindow.open(map, location_marker);
-                            // bind to click event
-                            jQuery('.gm-style-iw').find("#maps-content").click(function() {
-                                // only do this if it's an anchor link
-                                if (jQuery(this).attr("data-name").match("#")) {
-                                    // cancel default event propagation
-                                    event.preventDefault();
-                                    // scroll to the location
-                                    var href = jQuery(this).attr('data-name');
-                                    scrollToAnchor(href);
-                                }
-                            });
+                            var match = jQuery(location_marker.data);
+                            console.log(match);
+                            var listMatch = jQuery('a[data-name="' + match[0] + '"]');
+                            jQuery('.map-search-list').animate({
+                                scrollTop: jQuery(listMatch).parent().scrollTop() + jQuery(listMatch).offset().top
+                            }, 1000);
+                            jQuery(listMatch).parent().toggleClass('selected');
                         });
                         i++;
                     });
+
                     jQuery('.google-maps-trigger-item').each(function(i) {
-                        var dataName = jQuery(this).attr('data-name');
                         jQuery(this).on('click', function() {
                             google.maps.event.trigger(markers[i], 'click');
-                            jQuery("body .map-search-list").find("article[data-name='" +
-                                dataName + "']").css('background-color', '#e2e2e2');
                             return false;
                         });
                     });
                     console.log(markers);
+
                     var bounds = new google.maps.LatLngBounds();
                     for (var i = 0; i < markers.length; i++) {
                         bounds.extend(markers[i].getPosition());
@@ -229,23 +259,6 @@ function initPlMap() {
             );
         }
     }
-
-
-    var scrollToAnchor = function(id) {
-        // grab the element to scroll to based on the name
-        var elem = jQuery("a[data-name='" + id + "']");
-        // if that didn't work, look for an element with our ID
-        if (typeof(elem.offset()) === "undefined") {
-            elem = jQuery("#" + id);
-        }
-        // if the destination element exists
-        if (typeof(elem.offset()) !== "undefined") {
-            // do the scroll
-            jQuery(this).parents().eq(2).animate({
-                scrollTop: elem.offset().top
-            }, 1000);
-        }
-    };
 
     function OpenInfowindowForMarker(index) {
         google.maps.event.trigger(markers[index], 'click');
@@ -315,7 +328,7 @@ function initPlMap() {
                     lng: position.coords.longitude
                 };
                 console.log(geo_pos);
-                FadeOut();
+                mapFadeOut();
                 var latlng = new google.maps.LatLng(position.coords.latitude, position.coords
                     .longitude);
                 geocoder = new google.maps.Geocoder();
@@ -336,7 +349,9 @@ function initPlMap() {
                             stopLoader();
                         }, 8000);
                     } else {
-                        jQuery('.uil-load-css').html('<p><strong style="color:#f00;">Geolocation failed due to: ' + status + '<strong></p>');
+                        setTimeout(function() {
+                            jQuery('.uil-load-css').html('<p><strong style="color:#f00;">Geolocation failed due to: ' + status + '<strong></p>');
+                        }, 1750);
                     }
                 });
             }, function() {
@@ -351,6 +366,72 @@ function initPlMap() {
     function response(obj) {
         console.log(obj);
     }
+            // convert the zip code into coordinates and put all the data in an array
+    function getAddressInfoByFormatedAddress(zip) {
+        if (zip.length > 5 && typeof google != 'undefined') {
+            var addr = {};
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({
+                'address': zip
+            }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    mapFadeOut();
+                    if (results.length >= 1) {
+                        for (var ii = 0; ii < results[0].address_components.length; ii++) {
+                            var street_number = route = street = city = state = zipcode = country =
+                                formatted_address = '';
+                            var types = results[0].address_components[ii].types.join(",");
+                            if (types == "street_number") {
+                                addr.street_number = results[0].address_components[ii].long_name;
+                            }
+                            if (types == "route" || types == "point_of_interest,establishment") {
+                                addr.route = results[0].address_components[ii].long_name;
+                            }
+                            if (types == "sublocality,political" || types == "locality,political" ||
+                                types == "neighborhood,political" || types ==
+                                "administrative_area_level_3,political") {
+                                addr.city = (city == '' || types == "locality,political") ? results[0]
+                                    .address_components[ii].long_name : city;
+                            }
+                            if (types == "administrative_area_level_1,political") {
+                                addr.state = results[0].address_components[ii].short_name;
+                            }
+                            if (types == "postal_code" || types ==
+                                "postal_code_prefix,postal_code") {
+                                addr.zipcode = results[0].address_components[ii].long_name;
+                            }
+                            if (types == "country,political") {
+                                addr.country = results[0].address_components[ii].long_name;
+                            }
+                        }
+                        addr.lat = results[0].geometry.location.lat();
+                        addr.lng = results[0].geometry.location.lng();
+                        addr.place = results[0];
+                        addr.success = true;
+                        console.log(addr);
+                        setLocationMarkers(addr);
+                    } else {
+                        alert("Please enter a valid address");  
+                        response({
+                            success: false
+                        });
+                    }
+                } else {
+                    alert("Please enter a valid address");  
+                    response({
+                        success: false
+                    });
+                }
+            });
+        } else {
+            alert("Please enter a valid address");  
+            response({
+                success: false
+            });
+        }
+    }
+    
+    
     // convert the zip code into coordinates and put all the data in an array
     function getAddressInfoByZip(zip) {
         if (zip.length >= 5 && typeof google != 'undefined') {
@@ -360,7 +441,7 @@ function initPlMap() {
                 'address': zip
             }, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
-                    FadeOut();
+                    mapFadeOut();
                     if (results.length >= 1) {
                         for (var ii = 0; ii < results[0].address_components.length; ii++) {
                             var street_number = route = street = city = state = zipcode = country =
@@ -438,17 +519,19 @@ jQuery(function($) {
 jQuery(function($) {
     $('#main-content').addClass('has-map');
     $('.locations-container').parents().eq(2).addClass('tab-map');
-    // disable mousewheel on a input number field when in focus
-    // (to prevent Cromium browsers change the value when scrolling)
-    $('form#pac-input-form').on('focus', 'input[type=number]', function(e) {
-        $(this).on('mousewheel.disableScroll', function(e) {
-            e.preventDefault();
-        });
-    });
-    $('form#pac-input-form').on('blur', 'input[type=number]', function(e) {
-        $(this).off('mousewheel.disableScroll');
-    });
-    if ($(window).width() < 940) {
+    //show cards when matching data-name link is clicked
+    $( document ).on( "click", ".list-link", function(e) {
+       var dataName = $(this).data("name");
+       $('.mobile-card[data-name="' + dataName + '"]').addClass('opened');
+       e.stopPropagation();
+       $('.mobile-card.opened').on("click", function(e) {
+            e.stopPropagation();
+            $( "a.close-box" ).click( function(){
+              $( this ).parent().removeClass("opened");
+            });
+       });
+     });
+    if ($(window).width() < 941) {
         $('.mobile-content .map-search-map').appendTo('#PlMapSearch');
     }
 });

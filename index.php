@@ -3,7 +3,7 @@
 Plugin Name: Paintcare Locator
 Plugin URI: #
 Description: AGoogle Maps locator for paintcare
-Version: 1.0.0
+Version: 1.0.1
 Author: Anthony Brown
 Author URI: http://www.codeable.io
 */

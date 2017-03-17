@@ -12,7 +12,7 @@ global $map_vars,$maplocator;
 	<?php
 		$height = $maplocator['map-height'];
 	?>
-    #initPlMap, #initial-map{height:<?php echo $height; ?>px;width:100%;} .map-search-list{height:<?php echo $height - 50; ?>px} @media(max-width: 667px) { #initPlMap, #initial-map{height:210px;}.map-search-list{height: auto;}}
+    #initPlMap, #initial-map{height:<?php echo $height; ?>px;width:100%;} .map-search-list{height:<?php echo $height - 50; ?>px} @media(max-width: 667px) { #initPlMap, #initial-map{height:260px;}.map-search-list{height: auto;}}
 	<?php echo $maplocator['map-css']; ?>
     </style>
     
@@ -21,13 +21,14 @@ global $map_vars,$maplocator;
 	<!-- Start Map Locator Form -->
 	<div id="PlMapSearch">
 		<form action="" method="post" id="pac-input-form">
-			<input id="pac-input" class="controls" type="number" placeholder="<?php echo $maplocator['map-placeholder']; ?>" maxlength="5" >
+			<input id="pac-input" class="controls" type="text" placeholder="<?php echo $maplocator['map-placeholder']; ?>"  >
 			<button type="submit" id="pac-submit" class="icon-search icon-large" name="search"><i class="fa fa-search"></i></button>
 		</form>
 		<div class="map-search-output"></div>
 	</div>
 	<!-- End Map Locator Form -->
 	<div class="map-search-list"></div>
+	<div class="mobile-cards"></div>
 </div>
 
 
