@@ -14,17 +14,18 @@ function initPlMap() {
         },
         zoom: parseInt(paintcare.default_zoom),
         mapTypeControl: false,
+        streetViewControl:false,
         styles: map_theme,
     });
     var geolocationDiv = document.createElement('div');
     var geolocationControl = new GeolocationControl(geolocationDiv, map);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(geolocationDiv);
     var markers = [];
-    // Listen for the event fired when the user selects a prediction and retrieve
     // more details for that place.
     var bounds = new google.maps.LatLngBounds();
     //when the form is submit
     jQuery('#pac-input-form').on('submit', function() {
+        //start css loading graphic
         startLoader();
         var $this = jQuery("#pac-input");
         var val = $this.val();
@@ -82,10 +83,12 @@ function initPlMap() {
                 },
                 success: function(response) {
                     console.log(response);
+                    //clear out markers, sidebar list, and mobile cards when executing another search
                     clearOverlays();
                     jQuery('.map-search-list').empty();
                     jQuery('.mobile-cards').empty();
                     // loop through locations
+                    // count
                     i = 1;
                     jQuery.each(response, function(key, value) {
                         var latLng = new google.maps.LatLng(value.Lat, value.Lng);
@@ -140,9 +143,8 @@ function initPlMap() {
                             },
                             data: value.Id,
                         });
-                        // location_marker.metadata = {type: "point", id: i};
-                        //html for the windowbox
-
+                       
+                        //html for infowindow
                         // set default hours language
                         var hours = '';
                         if (value.DisplayHours) {
@@ -175,7 +177,13 @@ function initPlMap() {
                             info = '<p id="info-info"><span class="row-title">Information</span><span>' + info + '</span></p>';
                         }
 
-                        var message = '<div id="maps-content" data-name="' + value.Id + '">' + '<h4 id="maps-firstHeading" class="maps-firstHeading">' + value.Name + '</h4>' + '<div id="maps-body-content"><p id="info-address"><span class="row-title">Address </span><span>' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + ' <br><a href="https://www.google.com/maps/dir/current+location/' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + '" target="_blank" >Get Directions</a></span></p><p id="info-phone"><span class="row-title">Phone </span><span id="info-phone"><a href="tel:' + value.Phone + '">' + value.Phone + '</a></span></p>' + '<p id="info-hours"><span class="row-title">Hours </span><span>' + hours + '</span></p><p id="info-who"><span class="row-title">Available For</span><span>' + who + '</span></p><p id="info-limit"><span class="row-title">Restrictions</span><span>' + value.LeagalRes + '</span></p>' + info + '<p id="info-link"><span class="row-title">&nbsp;</span><span>Visit <a href="http://www.paintcare.org/products-we-accept/" target="_blank">www.paintcare.org/products-we-accept</a> for complete details.</span></p></div></div>';
+                        //format phone numbers for href=tel elements
+                        var phoneLink = value.Phone;
+                        phoneLink = phoneLink.replace(/\(|\)/g, '');
+                        phoneLink = phoneLink.replace(/\s+/g, '');
+                        phoneLink = phoneLink.replace(/(\d{3})/, "$1-");
+                       
+                        var message = '<div id="maps-content" data-name="' + value.Id + '">' + '<h4 id="maps-firstHeading" class="maps-firstHeading">' + value.Name + '</h4>' + '<div id="maps-body-content"><p id="info-address"><span class="row-title">Address </span><span>' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + ' <br><a href="https://www.google.com/maps/dir/current+location/' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + '" target="_blank" >Get Directions</a></span></p><p id="info-phone"><span class="row-title">Phone </span><span id="info-phone"><a href="tel:' + phoneLink + '">' + value.Phone + '</a></span></p>' + '<p id="info-hours"><span class="row-title">Hours </span><span>' + hours + '</span></p><p id="info-who"><span class="row-title">Available For</span><span>' + who + '</span></p><p id="info-limit"><span class="row-title">Restrictions</span><span>' + value.LeagalRes + '</span></p>' + info + '<p id="info-link"><span class="row-title">&nbsp;</span><span>Visit <a href="http://www.paintcare.org/products-we-accept/" target="_blank">www.paintcare.org/products-we-accept</a> for complete details.</span></p></div></div>';
 
                         markers.push(location_marker);
 
@@ -192,10 +200,10 @@ function initPlMap() {
                                 value.Name + '</p><p class="list-item-add-1">' +
                                 value.City + ', ' + value.State +
                                 '</p><p class="list-item-add-3">' + value.Distance +
-                                ' miles away</p></div></div></article>'
+                                ' miles away</p></div><i class="fa fa-info-circle" aria-hidden="true"></i></div></article>'
                             );              
                             jQuery('.mobile-cards').append(
-                                '<div class="mobile-card google-maps-trigger-item block-item" data-name="' + value.Id + '"><h4 class="mobile-heading">' + value.Name + '</h4><a class="close-box" href="#"><i class="fa fa-times" aria-hidden="true"></i></a>' + '<div class="mobile-card-content"><p id="card-address"><span class="row-title">Address </span><span>' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + ' <br><a href="https://www.google.com/maps/dir/current+location/' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + '" target="_blank" >Get Directions</a></span></p><p id="card-phone"><span class="row-title">Phone </span><span id="card-phone"><a href="tel:' + value.Phone + '">' + value.Phone + '</a></span></p>' + '<p id="card-hours"><span class="row-title">Hours </span><span>' + hours + '</span></p><p id="card-who"><span class="row-title">Available For</span><span>' + who + '</span></p><p id="card-limit"><span class="row-title">Restrictions</span><span>' + value.LeagalRes + '</span></p>' + info + '<p id="card-link"><span class="row-title">&nbsp;</span><span>Visit <a href="http://www.paintcare.org/products-we-accept/" target="_blank">www.paintcare.org/products-we-accept</a> for complete details.</span></p></div></div>'
+                                '<div class="mobile-card google-maps-trigger-items block-item" data-name="' + value.Id + '"><h4 class="mobile-heading">' + value.Name + '</h4><a class="close-box" href="javascript:;"><i class="fa fa-times" aria-hidden="true"></i></a>' + '<div class="mobile-card-content"><p id="card-address"><span class="row-title">Address </span><span>' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + ' <br><a href="https://www.google.com/maps/dir/current+location/' + value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' + value.State + ' ' + value.Zip + '" target="_blank" >Get Directions</a></span></p><p id="card-phone"><span class="row-title">Phone </span><span id="card-phone"><a href="tel:' + phoneLink + '">' + value.Phone + '</a></span></p>' + '<p id="card-hours"><span class="row-title">Hours </span><span>' + hours + '</span></p><p id="card-who"><span class="row-title">Available For</span><span>' + who + '</span></p><p id="card-limit"><span class="row-title">Restrictions</span><span>' + value.LeagalRes + '</span></p>' + info + '<p id="card-link"><span class="row-title">&nbsp;</span><span>Visit <a href="http://www.paintcare.org/products-we-accept/" target="_blank">www.paintcare.org/products-we-accept</a> for complete details.</span></p></div></div>'
                             );
                         } else{
                             // leave mobile cards empty
@@ -209,40 +217,65 @@ function initPlMap() {
                             value.City + ', ' + value.State +
                             '</p><p class="list-item-add-3">' + value.Distance +
                             ' miles away</p></div><div class="address-block"><p class="phone"><i class="fa fa-phone" aria-hidden="true"></i><a href="tel:' +
-                            value.Phone + '">' + value.Phone +
+                            phoneLink + '">' + value.Phone +
                             '</a></p><p class="directions"><i class="fa fa-map"></i><a href="https://www.google.com/maps/dir/current+location/' +
                             value.Address1 + ' ' + value.Address2 + ' ' + value.City + ', ' +
                             value.State + ' ' + value.Zip +
-                            '" target="_blank">Get Directions</a></p></div></div></article></div>'
-                        );
+                            '" target="_blank">Get Directions</a></p></div></div></article></div>');
                         }
 
+                        //stop css loading graphic once map tiles have loaded
                         google.maps.event.addListenerOnce(map, 'tilesloaded', stopLoader);
-                        
+
                         //register click event for window
-                        google.maps.event.addListener(location_marker, 'click', function() {
-                            infowindow.setOptions({
-                                content: message,
+                        google.maps.event.addListener(location_marker, 'click', markerClick);
+
+                         if (jQuery(window).width() < 1025){
+                            jQuery('.map-search-list article a').on('click', function(){
+                                var dataItem = jQuery(this).data('name');
+                                var markerMatch = jQuery(location_marker.data[dataItem]);
+                                 google.maps.event.trigger(markerMatch, 'click');
+                                console.log(markerMatch);
                             });
-                            infowindow.open(map, location_marker);
+                         }
+                        
+                        function markerClick(){
+                            //remove selected class from previously selected map-search-list item
+                            jQuery('.map-search-list article').removeClass('selected');
+                            // zoom to marker on mobile devices and don't open infowindow
+                            if (jQuery(window).width() < 1025){
+                                mobileZoom();
+                                scrollBehavior();   
+                                jQuery('html, body').animate({scrollTop: jQuery('.map-search-list').offset().top -300}, 800);
+                            } else {
+                                // set infowindow content as defined above
+                                infowindow.setOptions({
+                                    content: message,                               
+                                });
+                                // open infowindow
+                                infowindow.open(map, location_marker);
+                            }
+
+                        function mobileZoom(){
+                            map.setZoom(15);
+                            map.setCenter(location_marker.getPosition());
+                        }
+
+                        function scrollBehavior(){
                             var match = jQuery(location_marker.data);
-                            console.log(match);
-                            var listMatch = jQuery('a[data-name="' + match[0] + '"]');
-                            jQuery('.map-search-list').animate({
-                                scrollTop: jQuery(listMatch).parent().scrollTop() + jQuery(listMatch).offset().top
-                            }, 1000);
-                            jQuery(listMatch).parent().toggleClass('selected');
-                        });
+                            var container = jQuery('.map-search-list');
+                            var listMatch = jQuery('.map-search-list a[data-name="' + match[0] + '"]');
+                            var distance = jQuery(listMatch).offset().top;
+                             // scroll to matching map-search-list item
+                            paintcare_scroll(container,listMatch );
+                            // add selected class to highlight item
+                             jQuery(listMatch).parent().addClass('selected');
+                        }                
+                            
+                           
+                        }
                         i++;
                     });
-
-                    jQuery('.google-maps-trigger-item').each(function(i) {
-                        jQuery(this).on('click', function() {
-                            google.maps.event.trigger(markers[i], 'click');
-                            return false;
-                        });
-                    });
-                    console.log(markers);
 
                     var bounds = new google.maps.LatLngBounds();
                     for (var i = 0; i < markers.length; i++) {
@@ -250,14 +283,30 @@ function initPlMap() {
                     }
                     //fit all markers in locations
                     map.fitBounds(bounds);
+                    //increase zoom for mobile devices
+                    if (jQuery(window).width() < 1025) { 
+                        var listener = google.maps.event.addListener(map, "idle", function() { 
+                              if (map.getZoom() > 13) map.setZoom(13); 
+                              google.maps.event.removeListener(listener); 
+                    });
+                    }
                 },
                 dataType: "json"
             });
         } else {
             jQuery('.map-search-output').html(
-                '<p style="color:Red;font-weight:bold;">Please enter a valid Zip Code</p>'
+                '<p style="color:Red;font-weight:bold;" width="100%">Please enter a valid Zip Code</p>'
             );
         }
+    }
+
+    //manages map-list-item scroll when clicking on marker
+    function paintcare_scroll(container,location){    
+            container.animate({
+                scrollTop: location.offset().top - container.offset().top + container.scrollTop()
+            });
+    
+        
     }
 
     function OpenInfowindowForMarker(index) {
@@ -283,6 +332,7 @@ function initPlMap() {
         getAddressInfoByZip(document.forms[0].zip.value);
     }
 
+    //settings geolocation button in upper left corner
     function GeolocationControl(controlDiv, map) {
 
         // Set CSS for the control button
@@ -318,7 +368,6 @@ function initPlMap() {
     }
 
     
-
     function geolocate() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
@@ -366,7 +415,7 @@ function initPlMap() {
     function response(obj) {
         console.log(obj);
     }
-            // convert the zip code into coordinates and put all the data in an array
+    // convert the zip code into coordinates and put all the data in an array
     function getAddressInfoByFormatedAddress(zip) {
         if (zip.length > 5 && typeof google != 'undefined') {
             var addr = {};
@@ -432,7 +481,7 @@ function initPlMap() {
     }
     
     
-    // convert the zip code into coordinates and put all the data in an array
+    // convert the address into coordinates and put all the data in an array
     function getAddressInfoByZip(zip) {
         if (zip.length >= 5 && typeof google != 'undefined') {
             var addr = {};
@@ -492,7 +541,7 @@ function initPlMap() {
             });
         }
     }
-    //remove all markers
+    //remove all markers when performing a second search
     function clearOverlays() {
         for (var i = 0; i < markers.length; i++) {
             markers[i].setMap(null);
@@ -522,16 +571,19 @@ jQuery(function($) {
     //show cards when matching data-name link is clicked
     $( document ).on( "click", ".list-link", function(e) {
        var dataName = $(this).data("name");
-       $('.mobile-card[data-name="' + dataName + '"]').addClass('opened');
-       e.stopPropagation();
-       $('.mobile-card.opened').on("click", function(e) {
-            e.stopPropagation();
-            $( "a.close-box" ).click( function(){
+        $('.mobile-card[data-name="' + dataName + '"]').addClass('opened');
+        $('html, body').animate({scrollTop: jQuery('.opened h4.mobile-heading').offset().top - 50}, 500);
+        e.stopPropagation();
+     });
+        //close mobile card when clicking "x"
+       $( document ).on( "click",  "a.close-box" , function(e) {
               $( this ).parent().removeClass("opened");
             });
-       });
-     });
     if ($(window).width() < 941) {
+        //place map list sidebar below map for mobile devices
         $('.mobile-content .map-search-map').appendTo('#PlMapSearch');
     }
+    
+    
+    
 });
