@@ -2,11 +2,13 @@
 /*
 Plugin Name: Paintcare Locator
 Plugin URI: #
-Description: AGoogle Maps locator for paintcare
-Version: 1.0.1
-Author: Anthony Brown
+Description: PaintCare's Drop-off Site Locator
+Version: 1.1.1
+Author: Andrew Stimson and Anthony Brown
 Author URI: http://www.codeable.io
+Author Email: andrew@applejuice.codes
 */
+
 #make some definitions
 define('PL_PLUGIN_URI',  plugins_url('/', __FILE__));
 define('PL_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
@@ -30,7 +32,7 @@ class PaintCareLocator{
 			add_action('wp_enqueue_scripts', array($this,'scripts'));
 			
 			#url for the data feed
-			$this->paintcare_datafeed = 'http://12.156.76.219/Locator.svc/Getlocations';
+			$this->paintcare_datafeed = 'https://locator.paintcare.org/Locator.svc/Getlocations';
 
 			#ajax calls
 			add_action( 'wp_ajax_pc_get_json', array($this,'pc_get_json' ));
@@ -52,11 +54,16 @@ class PaintCareLocator{
 
 
 
-		$container_sizes = file_get_contents('http://12.156.76.219/Locator.svc/getContainerSizes');
-		$container_sizes = json_decode($container_sizes, true);
-		$container_sizes = $container_sizes['getContainerSizesResult'];
-		$container_sizes = json_decode($container_sizes, true);
-		
+		// $container_sizes = file_get_contents('http://12.156.76.219/Locator.svc/getContainerSizes');
+		// $container_sizes = json_decode($container_sizes, true);
+		// $container_sizes = $container_sizes['getContainerSizesResult'];
+		// $container_sizes = json_decode($container_sizes, true);
+		$map_states = json_encode($maplocator['map-states']);
+		// $map_states = explode( ',', $map_states);
+		// $map_states = preg_replace('/\s+/', '', $map_states);
+		// $map_states = json_encode($map_states);
+
+
 		#load the map icons for location types
 		$map_icons = array($maplocator['five-gallons']['url'],
 							$maplocator['five-gallon-reuse']['url'],
@@ -78,14 +85,14 @@ class PaintCareLocator{
 			'default_lng'=>$maplocator['map-default-lng'],
 			'default_zoom'=>$maplocator['map-default-zoom'],
 			'map_height' => $maplocator['map-height'],
+			'map_states' => $map_states,
 			'map_icons' => $map_icons,
-			'container_size' => $container_sizes
 		);
 
 		
 		
 		#set up localization variables so we can use them in our js file
-		wp_localize_script(  'paintcare-locator', 'paintcare', $translation_array , $container_sizes);
+		wp_localize_script(  'paintcare-locator', 'paintcare', $translation_array);
 		}
 		
 		#get the json content from remote url

@@ -170,37 +170,24 @@ Reuse Program (HHW)', 'redux-framework-demo' ),
                 'title'    => __( 'Placeholder text on search field', 'redux-framework-demo' ),
                 
             ),
-			array(
-                'id'       => 'map-default-lat',
-                'type'     => 'text',
-				'default' => '36.8701483',
-                'title'    => __( 'Default lat when first loading map', 'redux-framework-demo' ),
-                
-            ),
-			array(
-                'id'       => 'map-default-lng',
-                'type'     => 'text',
-				'default' => '-92.8772965',
-                'title'    => __( 'Default lng when first loading map', 'redux-framework-demo' ),
-                
-            ),
-			array(
-                'id'       => 'map-default-zoom',
-                'type'     => 'text',
-				'default' => '4',
-                'title'    => __( 'Default zoom when first loading map', 'redux-framework-demo' ),
-                
-            ),
+	
             array(
                 'id'       => 'map-image',
                 'type'     => 'media',
-                'title'    => __( 'Attach your static map image here', 'redux-framework-demo' ),
+                'title'    => __( 'Attach your static map image', 'redux-framework-demo' ),
                 
+            ),
+            array(
+                'id'       => 'map-states',
+                'type'     => 'text',
+                                        'default' => 'CA, CO, DC, ME, MN, OR, RI, VT',
+                'title'    => __( 'Define PaintCare States', 'redux-framework-demo' ),
+                'subtitle'   => __( 'use two letter state abbreviation', 'redux-framework-demo' ),
             ),
 		    array(
                 'id'       => 'map-design',
                 'type'     => 'textarea',
-                'title'    => __( 'Copy and paste your json here', 'redux-framework-demo' ),
+                'title'    => __( 'Copy and paste your JSON', 'redux-framework-demo' ),
                 
             ),
 			array(
