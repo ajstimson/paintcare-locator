@@ -4,7 +4,7 @@
 # copy /templates/map.php to  /paintcare-locator/map.php to overide the template
 function pl_get_template( $slug){
 
-global $map_vars;
+
 	
 	if(file_exists(get_stylesheet_directory() . '/paintcare-locator/map.php')){
 	$template = get_stylesheet_directory() . '/paintcare-locator/map.php';	

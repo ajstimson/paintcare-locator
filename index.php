@@ -48,9 +48,9 @@ class PaintCareLocator{
 			
 		#always make sure jquery is loaded	
 		wp_enqueue_script('jquery');
-			  
+		wp_enqueue_script( 'jquery-cookie', plugins_url('js/cookie.js', __FILE__), array('jquery') );  
 		#Register the script
-		wp_register_script( 'paintcare-locator', plugins_url('js/scripts.js', __FILE__), array('jquery') );
+		wp_register_script( 'paintcare-locator', plugins_url('js/scripts.js', __FILE__), array('jquery','jquery-cookie') );
 
 
 
@@ -76,14 +76,15 @@ class PaintCareLocator{
 						   );
 
 
+
 		# Localize the script with new data
 		$translation_array = array(
 			'plugin_uri' => PL_PLUGIN_URI,
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'api_key' => $maplocator['map-api-key'],
-			'default_lat'=>$maplocator['map-default-lat'],
-			'default_lng'=>$maplocator['map-default-lng'],
-			'default_zoom'=>$maplocator['map-default-zoom'],
+			'default_lat'=>'36.8701483',
+			'default_lng'=>'-92.8772965',
+			'default_zoom'=> '4',
 			'map_height' => $maplocator['map-height'],
 			'map_states' => $map_states,
 			'map_icons' => $map_icons,
@@ -97,6 +98,10 @@ class PaintCareLocator{
 		
 		#get the json content from remote url
 		function get_json($vars){
+			
+			$cached_json = get_transient(''.$vars['Lat'].''. $vars['Lng'].''.$vars['St'].'');
+			
+			if($cached_json == false){
 			
 			$args = array(
 						'method' => 'POST',
@@ -120,7 +125,14 @@ class PaintCareLocator{
 				$body = str_replace('{"GetLocationsResult":"', '',$response['body']);
 				$body = str_replace(']"}', ']',$body);
 				#convert to array
+				set_transient( ''.$vars['Lat'].''. $vars['Lng'].''.$vars['St'].'', $body, 12 * HOUR_IN_SECONDS );
 				return stripslashes($body);
+			}
+			
+			}else{
+				
+				
+			return stripslashes($cached_json) ;	
 			}
 			
 		}
@@ -151,11 +163,6 @@ class PaintCareLocator{
 			}
 		
 		
-			#get json 	
-			$map_vars['api_key'] = $this->google_api_key ;
-			$map_vars['center']['lat'] = '36.8701483';
-			$map_vars['center']['lng'] = '-92.8772965';
-			$map_vars['zoom'] = '4';
 			#get the template
 			ob_start();
 			pl_get_template('map');
