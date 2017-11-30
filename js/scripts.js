@@ -38,13 +38,13 @@ function initPlMap() {
         if (jQuery("#pac-input").val().length == 5 && jQuery.isNumeric(jQuery(
                 "#pac-input").val())) {
             // console.log('is zipcode');
-            var geocoder = new google.maps.Geocoder();
+           // var geocoder = new google.maps.Geocoder();
             var displayZip = getAddressInfoByZip(jQuery("#pac-input").val());
             console.log(geocoder);
         } else {
             // console.log('is address');
-            var geocoder = new google.maps.Geocoder();
-            var displayAddress = getAddressInfoByFormatedAddress(jQuery("#pac-input").val());
+           // var geocoder = new google.maps.Geocoder();
+            var displayAddress = getAddressInfoByZip(jQuery("#pac-input").val());
             if (displayAddress == false) {
                 alert("Please enter a valid address");
             }
@@ -579,7 +579,8 @@ function initPlMap() {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 };
-                // console.log(geo_pos);
+               
+			    // console.log(geo_pos);
                 mapFadeOut();
                 var latlng = new google.maps.LatLng(position.coords.latitude, position.coords
                     .longitude);
@@ -622,18 +623,12 @@ function initPlMap() {
     function response(obj) {
         // console.log(obj);
     }
-    // convert the zip code into coordinates and put all the data in an array
-    function getAddressInfoByFormatedAddress(zip) {
-        if (zip.length > 5 && typeof google != 'undefined') {
-            var addr = {};
-            var geocoder = new google.maps.Geocoder();
-            geocoder.geocode({
-                'address': zip
-            }, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    mapFadeOut();
-                    if (results.length >= 1) {
-                        for (var ii = 0; ii < results[0].address_components.length; ii++) {
+	//process results
+	
+	function pc_process_geocode_results(results,addr){
+		
+		
+		   for (var ii = 0; ii < results[0].address_components.length; ii++) {
                             var street_number = route = street = city = state = zipcode = country =
                                 formatted_address = '';
                             var types = results[0].address_components[ii].types.join(",");
@@ -660,87 +655,99 @@ function initPlMap() {
                                 addr.country = results[0].address_components[ii].long_name;
                             }
                         }
-                        addr.lat = results[0].geometry.location.lat();
-                        addr.lng = results[0].geometry.location.lng();
+                        addr.lat = results[0].geometry.location.lat;
+                        addr.lng = results[0].geometry.location.lng;
                         addr.place = results[0];
                         addr.success = true;
                         // console.log(addr);
                         setLocationMarkers(addr);
-                    } else {
-                        alert("Please enter a valid address");
-                        response({
-                            success: false
-                        });
-                    }
-                } else {
-                    alert("Please enter a valid address");
-                    response({
-                        success: false
-                    });
-                }
-            });
-        } else {
-            alert("Please enter a valid address");
-            response({
-                success: false
-            });
-        }
-    }
+						
+						
+	}
+   
+	
+	function pc_save_geocode(get_results,address){
+			
+	
+	
+		
+									jQuery.ajax({
+											type: 'POST',
+											url: paintcare.ajax_url,
+											data: {
+												action: 'pc_set_cache_geocode',
+												address: address,
+												pc_address: JSON.stringify(get_results)
+											},
+											  success: function(response) {
+												  console.log(response);
+											  }
+											
+									});
+											
+										
+		
+	}
     // convert the address into coordinates and put all the data in an array
     function getAddressInfoByZip(zip) {
         if (zip.length >= 5 && typeof google != 'undefined') {
             var addr = {};
-            var geocoder = new google.maps.Geocoder();
-            geocoder.geocode({
-                'address': zip
-            }, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    mapFadeOut();
-                    if (results.length >= 1) {
-                        for (var ii = 0; ii < results[0].address_components.length; ii++) {
-                            var street_number = route = street = city = state = zipcode = country =
-                                formatted_address = '';
-                            var types = results[0].address_components[ii].types.join(",");
-                            if (types == "street_number") {
-                                addr.street_number = results[0].address_components[ii].long_name;
-                            }
-                            if (types == "route" || types == "point_of_interest,establishment") {
-                                addr.route = results[0].address_components[ii].long_name;
-                            }
-                            if (types == "sublocality,political" || types == "locality,political" ||
-                                types == "neighborhood,political" || types ==
-                                "administrative_area_level_3,political") {
-                                addr.city = (city == '' || types == "locality,political") ? results[0]
-                                    .address_components[ii].long_name : city;
-                            }
-                            if (types == "administrative_area_level_1,political") {
-                                addr.state = results[0].address_components[ii].short_name;
-                            }
-                            if (types == "postal_code" || types ==
-                                "postal_code_prefix,postal_code") {
-                                addr.zipcode = results[0].address_components[ii].long_name;
-                            }
-                            if (types == "country,political") {
-                                addr.country = results[0].address_components[ii].long_name;
-                            }
-                        }
-                        addr.lat = results[0].geometry.location.lat();
-                        addr.lng = results[0].geometry.location.lng();
-                        addr.place = results[0];
-                        addr.success = true;
-                        setLocationMarkers(addr);
-                    } else {
-                        response({
-                            success: false
-
-                        });
-                    }
-                } else {
-                    response({
-                        success: false
-                    });
-                }
-            });
+           
+		   
+		   
+		   jQuery.ajax({
+                type: 'POST',
+                url: paintcare.ajax_url,
+                data: {
+                    action: 'pc_get_cache_geocode',
+                    pc_address: zip
+                },
+                success: function(response) {
+					
+					var obj = jQuery.parseJSON(response);
+		   		if(obj.geocode !=""){
+					
+					 pc_process_geocode_results(obj.geocode,addr);
+					
+						}else{
+								console.log(1);
+				   
+									var geocoder = new google.maps.Geocoder();
+									geocoder.geocode({
+										'address': zip
+									}, function(results, status) {
+										if (status == google.maps.GeocoderStatus.OK) {
+										
+											pc_save_geocode(results,zip);	
+										
+									
+										
+										
+											mapFadeOut();
+											if (results.length >= 1) {
+											  
+											  
+											   pc_process_geocode_results(results,addr);
+											  
+											  
+											} else {
+												response({
+													success: false
+						
+												});
+											}
+										} else {
+											response({
+												success: false
+											});
+										}
+									});
+					
+						}
+				
+				}
+		   });
+			
         } else {
             response({
                 success: false

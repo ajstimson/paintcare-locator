@@ -37,10 +37,61 @@ class PaintCareLocator{
 			#ajax calls
 			add_action( 'wp_ajax_pc_get_json', array($this,'pc_get_json' ));
 			add_action( 'wp_ajax_nopriv_pc_get_json', array($this,'pc_get_json' ) );
+			#ajax calls
+			add_action( 'wp_ajax_pc_get_cache_geocode', array($this,'get_cache_geocode' ));
+			add_action( 'wp_ajax_nopriv_pc_get_cache_geocode', array($this,'get_cache_geocode' ) );
+			#ajax calls
+			add_action( 'wp_ajax_pc_set_cache_geocode', array($this,'set_cache_geocode' ));
+			add_action( 'wp_ajax_nopriv_pc_set_cache_geocode', array($this,'set_cache_geocode' ) );
+			add_action( 'rest_api_init',array($this,'api_route'));
+		
+		
+		
+		}
+		function set_cache_geocode(){
+		
+		$message['success'] = 0;
+        	if($_POST['pc_address'] != ''){
+				
+		$message['success'] = 1;
+				$address = json_decode(stripslashes($_POST['pc_address']));
+				$transient = set_transient(md5($_POST['address']), $address, 180 * DAY_IN_SECONDS);
+				$message['transient'] = get_transient(md5($_POST['address']));
+				$message['transient_name'] =md5($_POST['address']); 
+					}
+		echo json_encode($message);	
+			die();
+		}
+		function get_cache_geocode(){
+		
+        	if($_POST['pc_address'] != ''){
+				$message['success'] = 1;
+				$message['geocode'] = '';
+				$message['address'] = $_POST['pc_address'];
+				$message['transient_name'] = md5($_POST['pc_address']);
+				
+				$transient = get_transient(md5($_POST['pc_address']));
+				
+				if($transient == false){
+				$message['success'] = 0;					
+				}else{
+				$message['geocode'] =  $transient;	
+				}
+				
+				
+				echo json_encode($message);
+				
+			}		
+				
 			
-			
+			die();
 		}
 		
+		function rest_api( $data ){
+			
+			$cached_geocode = get_transient();
+			
+		}
 	
 		#load javascript and css scripts
 		function scripts(){
@@ -96,6 +147,13 @@ class PaintCareLocator{
 		wp_localize_script(  'paintcare-locator', 'paintcare', $translation_array);
 		}
 		
+		
+		function cache_geocode(){
+			
+			
+			
+		die();	
+		}
 		#get the json content from remote url
 		function get_json($vars){
 			
