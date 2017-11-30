@@ -37,13 +37,13 @@ class PaintCareLocator{
 			#ajax calls
 			add_action( 'wp_ajax_pc_get_json', array($this,'pc_get_json' ));
 			add_action( 'wp_ajax_nopriv_pc_get_json', array($this,'pc_get_json' ) );
-			#ajax calls
+			
 			add_action( 'wp_ajax_pc_get_cache_geocode', array($this,'get_cache_geocode' ));
 			add_action( 'wp_ajax_nopriv_pc_get_cache_geocode', array($this,'get_cache_geocode' ) );
-			#ajax calls
+			
 			add_action( 'wp_ajax_pc_set_cache_geocode', array($this,'set_cache_geocode' ));
 			add_action( 'wp_ajax_nopriv_pc_set_cache_geocode', array($this,'set_cache_geocode' ) );
-			add_action( 'rest_api_init',array($this,'api_route'));
+			
 		
 		
 		
@@ -87,11 +87,7 @@ class PaintCareLocator{
 			die();
 		}
 		
-		function rest_api( $data ){
-			
-			$cached_geocode = get_transient();
-			
-		}
+	
 	
 		#load javascript and css scripts
 		function scripts(){
