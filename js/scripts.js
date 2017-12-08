@@ -778,7 +778,7 @@ function loadPlMap() {
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.src = "https://maps.googleapis.com/maps/api/js?key=" + paintcare.api_key +
-        "&libraries=places&callback=initPlMap&v=3";
+        "&callback=initPlMap&v=3";
     document.body.appendChild(script);
 }
 // console.log(markers);
