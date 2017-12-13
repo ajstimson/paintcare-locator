@@ -69,6 +69,7 @@
         'database' => 'options',
         'transient_time' => '3600',
         'network_sites' => TRUE,
+		'dev_mdoe'=> false
     );
 
     

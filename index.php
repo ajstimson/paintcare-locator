@@ -45,8 +45,30 @@ class PaintCareLocator{
 			add_action( 'wp_ajax_nopriv_pc_set_cache_geocode', array($this,'set_cache_geocode' ) );
 			
 		
+			add_action( 'admin_notices',array($this,'empty_cache'));
+		
+		}
+		
+		function empty_cache(){
+			global $wpdb;
+			
+			if($_GET['paintcare_empty_cache'] == 1){
+				
+				$wpdb->query( "DELETE FROM " . $wpdb->prefix . "options
+								 WHERE `option_name` LIKE ('_transient_%')");
+
+				$wpdb->query( "DELETE FROM " . $wpdb->prefix . "options
+								 WHERE `option_name` LIKE ('_transient_%')");
+		
+		echo '  <div class="notice notice-success is-dismissible">
+        <p>Deleted Cache!</p>
+    </div>
+';
+			
+			}
 		
 		
+			
 		}
 		function set_cache_geocode(){
 		
