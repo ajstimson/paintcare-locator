@@ -37,10 +37,11 @@ function initPlMap() {
         }
         if (jQuery("#pac-input").val().length == 5 && jQuery.isNumeric(jQuery(
                 "#pac-input").val())) {
-            // console.log('is zipcode');
-           // var geocoder = new google.maps.Geocoder();
+          console.log('is zipcode');
+          var geocoder = new google.maps.Geocoder();
             var displayZip = getAddressInfoByZip(jQuery("#pac-input").val());
             console.log(geocoder);
+			 mapFadeOut();
         } else {
             // console.log('is address');
            // var geocoder = new google.maps.Geocoder();
